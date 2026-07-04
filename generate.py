@@ -66,9 +66,24 @@ def main():
             # "docs/lck.ics" -> "lck.ics"
             relative_path = os.path.relpath(output, "docs")
 
+            # Prefer the real league name(s) actually present in the fetched
+            # events (e.g. "LCK", "MSI") over the raw `regions` filter string,
+            # since the former is what a person recognizes on the card.
+            league_names = sorted({ev["league"] for ev in events if ev.get("league")})
+            if league_names:
+                league_label = " / ".join(league_names)
+            elif cfg.get("regions"):
+                # No events matched (e.g. off-season) — fall back to whatever
+                # was configured so the card isn't blank.
+                regions_cfg = cfg["regions"]
+                league_label = ", ".join(regions_cfg) if isinstance(regions_cfg, list) else regions_cfg
+            else:
+                league_label = ""
+
             manifest.append({
                 "name": cfg.get("cal_name", name),
                 "game": game,
+                "league": league_label,
                 "file": relative_path,
                 "description": cfg.get("description", f"{len(events)} matches"),
                 "color": cfg.get("color", DEFAULT_COLORS.get(game, "cyan")),

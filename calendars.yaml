@@ -16,9 +16,19 @@
 #   states               - string or list, e.g. "unstarted"
 #   exclude_tbd          - true/false, drop undetermined bracket slots
 #   cal_name             - name shown in calendar apps (e.g. "Subscribed" list)
+#   description          - subtext shown on the calendar's card on the webpage
+#                          (defaults to "N matches" if omitted)
+#   color                - card accent color on the webpage, e.g. "cyan",
+#                          "violet", "amber" (defaults to cyan for lol,
+#                          violet for valorant — see DEFAULT_COLORS in
+#                          generate.py)
 #   text_header          - prefix shown on every event, e.g. "T1 Game Day"
 #   include_league_tag   - true/false, include "[GAME][LEAGUE]" in the title
 #   add_reminder_minutes - int, popup reminder N minutes before match start
+#
+# Note: the "league" tag shown on each webpage card (e.g. "LCK", "MSI") is
+# NOT set here — it's auto-derived by generate.py from the actual matches
+# fetched, so it always reflects real data rather than what you typed.
 # ============================================================
 
 - name: "MSI 2026"
@@ -27,16 +37,18 @@
   regions: ["MSI"]
   exclude_tbd: true
   cal_name: "MSI Schedule"
+  description: "Confirmed matches for the knockout stage"
   include_league_tag: false
   add_reminder_minutes: 30
 
-- name: "LPL - BLG"
+- name: "BLG Split 3 Matches"
   output: "docs/blg_lpl.ics"
   game: "lol"
   team: "BLG"
   days_ahead: 30
   exclude_tbd: true
   cal_name: "LPL - BLG Games"
+  description: "LPL Split 3 matches involving BLG"
   include_league_tag: true
   add_reminder_minutes: 30
 
@@ -46,5 +58,6 @@
   regions: ["vct_pacific"]
   team: "Paper Rex"
   cal_name: "PRX Games"
+  description: "VCT Pacific matches involving PRX"
   text_header: "PRX Game Day"
   include_league_tag: false

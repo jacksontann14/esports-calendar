@@ -333,12 +333,16 @@
     const icsAbsoluteUrl = baseUrl() + entry.file;
     const { webcalUrl, googleUrl, outlookUrl } = buildLinks(icsAbsoluteUrl, entry.name);
     const color = entry.color || "cyan";
+    // Prefer the specific league (e.g. "LCK", "MSI") over the game name,
+    // since the section header already conveys the game — repeating it
+    // on every card is redundant.
+    const tagLabel = entry.league || GAME_LABELS[entry.game] || entry.game;
 
     return `
       <div class="card" style="--tag-color: var(--${color})">
         <div class="card-top">
           <div class="card-main">
-            <span class="card-tag">${GAME_LABELS[entry.game] || entry.game}</span>
+            <span class="card-tag">${tagLabel}</span>
             <span class="card-title">${entry.name}</span>
             <span class="card-sub">${entry.description || ""}</span>
           </div>
