@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My Esports Calendars</title>
+  <style>
+    body { font-family: -apple-system, system-ui, sans-serif; max-width: 640px; margin: 40px auto; padding: 0 20px; color: #222; }
+    h1 { font-size: 1.5rem; }
+    ul { list-style: none; padding: 0; }
+    li { margin: 12px 0; }
+    a.cal-link {
+      display: inline-block;
+      padding: 10px 16px;
+      background: #2563eb;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+    }
+    a.cal-link:hover { background: #1d4ed8; }
+    p.note { color: #666; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <h1>My Esports Calendars</h1>
+  <p class="note">Tap a link below on your iPhone/iPad to subscribe directly, or copy the URL into Google Calendar → Other calendars → From URL.</p>
+
+  <ul>
+    <li>
+      <a class="cal-link" href="webcal://REPLACE_WITH_YOUR_USERNAME.github.io/my-esports-calendar/lck.ics">LCK Full Season</a>
+    </li>
+    <li>
+      <a class="cal-link" href="webcal://REPLACE_WITH_YOUR_USERNAME.github.io/my-esports-calendar/msi.ics">MSI (confirmed matches only)</a>
+    </li>
+    <li>
+      <a class="cal-link" href="webcal://REPLACE_WITH_YOUR_USERNAME.github.io/my-esports-calendar/t1_schedule.ics">T1 Game Day</a>
+    </li>
+    <li>
+      <a class="cal-link" href="webcal://REPLACE_WITH_YOUR_USERNAME.github.io/my-esports-calendar/prx_pacific.ics">PRX / VCT Pacific</a>
+    </li>
+  </ul>
+
+  <p class="note">Calendars auto-refresh roughly every 6 hours. To add or change a calendar, edit <code>calendars.yaml</code> in the repo.</p>
+</body>
+</html>

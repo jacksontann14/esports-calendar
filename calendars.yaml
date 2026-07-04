@@ -1,0 +1,60 @@
+# ============================================================
+# Calendar configuration
+# ============================================================
+# Each block below produces ONE .ics file at its own stable URL.
+# Add a new block to create a new subscribable calendar.
+# Edit an existing block to change its filters — the same URL will
+# start serving updated results on the next scheduled run.
+#
+# Available keys (all optional except name/output/game):
+#   name                 - label shown in build logs, not the calendar itself
+#   output               - path to write the .ics file, must be under docs/
+#   game                 - "lol" or "valorant"
+#   regions              - string or list of strings (league/region filter)
+#   team                 - string, only matches involving this team
+#   days_ahead           - int, only matches in the next N days
+#   states               - string or list, e.g. "unstarted"
+#   exclude_tbd          - true/false, drop undetermined bracket slots
+#   cal_name             - name shown in calendar apps (e.g. "Subscribed" list)
+#   text_header          - prefix shown on every event, e.g. "T1 Game Day"
+#   include_league_tag   - true/false, include "[GAME][LEAGUE]" in the title
+#   add_reminder_minutes - int, popup reminder N minutes before match start
+# ============================================================
+
+- name: "LCK Full Season"
+  output: "docs/lck.ics"
+  game: "lol"
+  regions: ["LCK"]
+  exclude_tbd: false
+  cal_name: "LCK Schedule"
+  include_league_tag: true
+
+- name: "MSI Confirmed Matches Only"
+  output: "docs/msi.ics"
+  game: "lol"
+  regions: ["MSI"]
+  exclude_tbd: true
+  cal_name: "MSI Schedule"
+  text_header: "MSI Watch"
+  include_league_tag: false
+  add_reminder_minutes: 30
+
+- name: "T1 Game Day"
+  output: "docs/t1_schedule.ics"
+  game: "lol"
+  team: "T1"
+  days_ahead: 30
+  exclude_tbd: true
+  cal_name: "T1 Schedule"
+  text_header: "T1 Game Day"
+  include_league_tag: false
+  add_reminder_minutes: 30
+
+- name: "PRX / VCT Pacific"
+  output: "docs/prx_pacific.ics"
+  game: "valorant"
+  regions: ["pacific"]
+  team: "PRX"
+  cal_name: "PRX / Pacific"
+  text_header: "PRX Game Day"
+  include_league_tag: false
