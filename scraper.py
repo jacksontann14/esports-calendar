@@ -29,9 +29,11 @@ VALORANT_HEADERS = {"Authorization": VALORANT_API_KEY}
 
 SUPPORTED_GAMES = {"lol", "valorant"}
 
-# VALORANT's schedule endpoint has no real pagination/history depth, so one
-# fetch per run is generally enough. Pass force_refresh=True to bypass.
-_valorant_cache = {"data": None}
+# VALORANT's unfiltered schedule call is truncated/capped by HenrikDev — it's
+# only used to discover which league identifiers are currently live, never
+# as a source of a complete match list. Passing an exact `league` param
+# returns that league's full schedule instead. Cache both separately.
+_valorant_cache = {"unfiltered": None, "by_league": {}}
 
 
 # ============================================================
@@ -115,50 +117,77 @@ def _lol_raw_schedule(league_ids=None):
     return events
 
 
-def _valorant_raw_schedule(league=None, region=None, force_refresh=False):
+def _valorant_discover(force_refresh=False):
     """
-    Fetch the VALORANT schedule.
-
-    If league/region is supplied, pass it directly to HenrikDev so the API
-    returns the full schedule for that league instead of the default limited
-    schedule.
+    Fetch the unfiltered schedule — HenrikDev truncates/caps this response,
+    so it's used ONLY to discover which league identifiers are currently
+    live, never as a source of a complete match list for any single league.
     """
-    # Only use cache for the unfiltered schedule
-    if (
-        league is None
-        and region is None
-        and _valorant_cache["data"] is not None
-        and not force_refresh
-    ):
-        return _valorant_cache["data"]
+    if _valorant_cache["unfiltered"] is not None and not force_refresh:
+        return _valorant_cache["unfiltered"]
 
-    params = {}
-
-    if league:
-        params["league"] = league
-
-    if region:
-        params["region"] = region
-
-    resp = requests.get(
-        VALORANT_BASE_URL,
-        headers=VALORANT_HEADERS,
-        params=params if params else None,
-    )
-
+    resp = requests.get(VALORANT_BASE_URL, headers=VALORANT_HEADERS)
     if resp.status_code == 401:
         raise RuntimeError(
-            "VALORANT API returned 401 Unauthorized..."
+            "VALORANT API returned 401 Unauthorized — check VALORANT_API_KEY is a "
+            "real key from https://api.henrikdev.xyz/dashboard/, that "
+            "VALORANT_HEADERS was rebuilt after setting it, and check "
+            "https://status.henrikdev.xyz/ for outages."
         )
-
     resp.raise_for_status()
-
     data = resp.json()["data"]
-
-    if league is None and region is None:
-        _valorant_cache["data"] = data
-
+    _valorant_cache["unfiltered"] = data
     return data
+
+
+def _valorant_fetch_league(identifier, force_refresh=False):
+    """
+    Fetch the FULL schedule for one exact league identifier (e.g.
+    'vct_pacific'). Passing this param to HenrikDev returns that league's
+    complete schedule instead of the capped default — this is what avoids
+    the truncation bug, as long as `identifier` is the exact string
+    HenrikDev expects (see _valorant_resolve_identifiers below).
+    """
+    if not force_refresh and identifier in _valorant_cache["by_league"]:
+        return _valorant_cache["by_league"][identifier]
+
+    resp = requests.get(VALORANT_BASE_URL, headers=VALORANT_HEADERS, params={"league": identifier})
+    if resp.status_code == 401:
+        raise RuntimeError(
+            "VALORANT API returned 401 Unauthorized — check VALORANT_API_KEY is a "
+            "real key from https://api.henrikdev.xyz/dashboard/."
+        )
+    resp.raise_for_status()
+    data = resp.json()["data"]
+    _valorant_cache["by_league"][identifier] = data
+    return data
+
+
+def _valorant_resolve_identifiers(query, force_refresh=False):
+    """
+    Loose-match a user-facing query (e.g. 'china', 'pacific', 'emea')
+    against whatever league identifiers are CURRENTLY LIVE in the
+    (truncated) discovery call, and return the exact identifier string(s)
+    HenrikDev expects for the `league` param.
+
+    If nothing matches (e.g. the league exists but has no matches in the
+    current discovery window, so it never showed up to match against),
+    falls back to treating the query itself as the identifier — this lets
+    you pass a known-exact slug like 'vct_pacific' directly even when
+    discovery can't confirm it.
+    """
+    raw = _valorant_discover(force_refresh=force_refresh)
+    events = [e for e in (_normalize_valorant_event(r) for r in raw) if e]
+    live_identifiers = {ev["identifier"] for ev in events if ev["identifier"]}
+
+    q = _norm(query)
+    matches = [ident for ident in live_identifiers if q in _norm(ident)]
+
+    if not matches:
+        # Not found in the current discovery sample — best-effort fallback,
+        # try the query as a literal identifier rather than failing outright.
+        return [query]
+    return matches
 
 
 # ============================================================
@@ -226,7 +255,7 @@ def list_regions(game, force_refresh=False):
         return leagues
 
     if game == "valorant":
-        raw = _valorant_raw_schedule(force_refresh=force_refresh)
+        raw = _valorant_discover(force_refresh=force_refresh)
         events = [e for e in (_normalize_valorant_event(r) for r in raw) if e]
         seen = {ev["identifier"] or ev["league"]: ev["region"] for ev in events}
         print("VALORANT leagues currently live (off-season leagues won't appear):")
@@ -279,10 +308,20 @@ def get_events(
     game:          'lol' or 'valorant'
     regions:       str or list of str — league/region filter.
                    LoL matches against real league names/slugs.
-                   VALORANT matches loosely against whatever labels are
-                   currently live (e.g. 'china', 'emea', 'pacific').
+                   VALORANT: loosely matched against currently-live league
+                   identifiers (e.g. 'china', 'emea', 'pacific'), then the
+                   FULL schedule for each resolved league is fetched
+                   directly (avoids HenrikDev's truncated default response).
+                   If no live match is found, your query is tried as a
+                   literal identifier as a fallback.
     team:          str — only return matches involving this team
                    (substring match, case-insensitive).
+                   VALORANT caveat: there's no way to query HenrikDev by
+                   team directly, so a team filter with no `regions` still
+                   searches the truncated discovery response and can miss
+                   matches. Pass `regions` alongside `team` when possible
+                   (e.g. team="PRX", regions="pacific") to search that
+                   league's full schedule instead.
     days_ahead:    int — shortcut for "from now until N days from now".
     date_start:    datetime — explicit range start (used instead of days_ahead).
     date_end:      datetime — explicit range end.
@@ -301,22 +340,26 @@ def get_events(
         raw_events = _lol_raw_schedule(league_ids)
         events = [e for e in (_normalize_lol_event(r) for r in raw_events) if e]
     elif game == "valorant":
-        league = None
-
         if regions:
-            # treat the regions argument as HenrikDev's league parameter
-            if isinstance(regions, str):
-                league = regions
-            else:
-                # if multiple are supplied, HenrikDev accepts comma-separated values
-                league = ",".join(regions)
+            queries = [regions] if isinstance(regions, str) else regions
+            resolved_identifiers = set()
+            for q in queries:
+                resolved_identifiers.update(_valorant_resolve_identifiers(q, force_refresh=force_refresh))
 
-        raw_events = _valorant_raw_schedule(
-            league=league,
-            force_refresh=force_refresh,
-        )
+            raw_events = []
+            for identifier in resolved_identifiers:
+                raw_events.extend(_valorant_fetch_league(identifier, force_refresh=force_refresh))
 
-        events = [e for e in (_normalize_valorant_event(r) for r in raw_events) if e]
+            events = [e for e in (_normalize_valorant_event(r) for r in raw_events) if e]
+            # Defensive client-side filter too, in case a resolved identifier's
+            # full response ever includes events outside what was asked for.
+            events = [ev for ev in events if any(_matches_region_query(ev, q) for q in queries)]
+        else:
+            # No filter: this is the capped/truncated discovery response —
+            # fine for a broad look, but not guaranteed complete for any
+            # single league. Filter by `regions` above to get full data.
+            raw_events = _valorant_discover(force_refresh=force_refresh)
+            events = [e for e in (_normalize_valorant_event(r) for r in raw_events) if e]
 
     else:
         raise ValueError(f"Unsupported game '{game}'. Choose from {SUPPORTED_GAMES}")

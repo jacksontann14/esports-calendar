@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Esports Calendar Hub</title>
+<title>Match Schedule Hub</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -40,8 +40,6 @@
     margin: 0 auto;
     padding: 56px 24px 80px;
   }
-
-  /* ---------- Header / hero ---------- */
 
   .eyebrow {
     display: inline-flex;
@@ -85,7 +83,7 @@
     color: var(--text-dim);
     font-size: 1.05rem;
     line-height: 1.6;
-    max-width: 52ch;
+    max-width: 56ch;
     margin: 0 0 40px;
   }
   .lede code {
@@ -97,20 +95,11 @@
     color: var(--amber);
   }
 
-  /* ---------- Section labels ---------- */
-
   .section-label {
     display: flex;
     align-items: baseline;
     gap: 12px;
     margin: 48px 0 20px;
-  }
-  .section-label .num {
-    font-family: 'Rajdhani', sans-serif;
-    font-weight: 700;
-    font-size: 0.85rem;
-    color: var(--text-dim);
-    letter-spacing: 0.1em;
   }
   .section-label .title {
     font-family: 'Rajdhani', sans-serif;
@@ -126,8 +115,6 @@
     background: var(--line);
   }
 
-  /* ---------- Calendar cards ---------- */
-
   .grid {
     display: grid;
     gap: 12px;
@@ -135,18 +122,12 @@
 
   .card {
     position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
     background: var(--bg-panel);
     border: 1px solid var(--line);
     border-radius: 10px;
     padding: 20px 22px;
-    text-decoration: none;
-    color: var(--text);
-    transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease;
     overflow: hidden;
+    transition: border-color 0.15s ease, background 0.15s ease;
   }
   .card::before {
     content: "";
@@ -158,7 +139,15 @@
   .card:hover {
     background: var(--bg-panel-hover);
     border-color: var(--tag-color, var(--cyan));
-    transform: translateX(2px);
+  }
+
+  .card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
   }
 
   .card-main {
@@ -189,21 +178,54 @@
     color: var(--text-dim);
   }
 
-  .card-cta {
-    flex-shrink: 0;
-    font-family: 'Rajdhani', sans-serif;
-    font-weight: 600;
-    font-size: 0.82rem;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--bg);
-    background: var(--tag-color, var(--cyan));
-    padding: 9px 16px;
-    border-radius: 6px;
-    white-space: nowrap;
+  .card-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
   }
 
-  /* ---------- Footer / instructions ---------- */
+  .btn {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 600;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    border: 1px solid var(--line);
+    color: var(--text);
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.12s ease;
+  }
+  .btn:hover {
+    border-color: var(--tag-color, var(--cyan));
+    color: var(--tag-color, var(--cyan));
+  }
+  .btn.primary {
+    background: var(--tag-color, var(--cyan));
+    border-color: var(--tag-color, var(--cyan));
+    color: var(--bg);
+  }
+  .btn.primary:hover {
+    filter: brightness(1.1);
+    color: var(--bg);
+  }
+  .btn.copied {
+    color: var(--amber) !important;
+    border-color: var(--amber) !important;
+  }
+
+  .empty-state, .error-state {
+    color: var(--text-dim);
+    font-size: 0.92rem;
+    padding: 24px;
+    text-align: center;
+    border: 1px dashed var(--line);
+    border-radius: 10px;
+  }
+  .error-state { color: var(--amber); }
 
   .howto {
     background: var(--bg-panel);
@@ -250,8 +272,7 @@
   }
 
   @media (max-width: 560px) {
-    .card { flex-direction: column; align-items: flex-start; }
-    .card-cta { align-self: flex-start; }
+    .card-top { flex-direction: column; }
   }
 </style>
 </head>
@@ -262,60 +283,23 @@
     <h1>Match Schedule <span>Hub</span></h1>
     <p class="lede">
       Subscribe once, get every match automatically added to your calendar
-      — no app, no login. Tap a feed below to subscribe on iPhone, or copy
-      its link into Google Calendar via <code>Other calendars &rarr; From URL</code>.
+      — no app, no login. Pick your calendar app below for a one-tap
+      subscribe, or use <strong>Copy link</strong> for any other app.
     </p>
 
-    <div class="section-label">
-      <span class="num">01</span>
-      <span class="title">League of Legends</span>
-    </div>
-    <div class="grid">
-      <a class="card" style="--tag-color: var(--cyan)" href="webcal://jacksontann14.github.io/esports-calendar/msi.ics">
-        <div class="card-main">
-          <span class="card-tag">LoL &middot; MSI</span>
-          <span class="card-title">MSI 2026</span>
-          <span class="card-sub">Confirmed matches for the knockout stage</span>
-        </div>
-        <span class="card-cta">Subscribe</span>
-      </a>
-
-      <a class="card" style="--tag-color: var(--cyan)" href="webcal://jacksontann14.github.io/esports-calendar/blg_lpl.ics">
-        <div class="card-main">
-          <span class="card-tag">LoL &middot; LPL</span>
-          <span class="card-title">MSI &mdash; BLG Split 3 Matches</span>
-          <span class="card-sub">LPL Split 3 matches involving BLG</span>
-        </div>
-        <span class="card-cta">Subscribe</span>
-      </a>
-    </div>
+    <div id="calendar-sections"></div>
 
     <div class="section-label">
-      <span class="num">02</span>
-      <span class="title">Valorant</span>
-    </div>
-    <div class="grid">
-      <a class="card" style="--tag-color: var(--violet)" href="webcal://jacksontann14.github.io/esports-calendar/prx_pacific.ics">
-        <div class="card-main">
-          <span class="card-tag">VAL &middot; Pacific</span>
-          <span class="card-title">PRX Game Day</span>
-          <span class="card-sub">VCT Pacific matches involving PRX</span>
-        </div>
-        <span class="card-cta">Subscribe</span>
-      </a>
-    </div>
-
-    <div class="section-label">
-      <span class="num">03</span>
       <span class="title">How subscriptions work</span>
     </div>
     <div class="howto">
       <h3>Setup</h3>
       <ol>
-        <li><strong>iPhone:</strong> tap any "Subscribe" link above &mdash; iOS opens the Calendar app and prompts you to confirm.</li>
-        <li><strong>Google Calendar:</strong> left sidebar &rarr; <strong>Other calendars</strong> &rarr; <code>+</code> &rarr; <strong>From URL</strong>, then paste the feed's <code>https://</code> link.</li>
-        <li><strong>Outlook:</strong> Add calendar &rarr; <strong>Subscribe from web</strong>, paste the same link.</li>
-        <li>Feeds refresh once a day automatically &mdash; your calendar app re-checks them on its own schedule, so new matches can take a few hours to appear.</li>
+        <li><strong>iPhone / Apple Calendar:</strong> tap the <strong>Apple</strong> button — it opens Calendar and prompts you to confirm.</li>
+        <li><strong>Google Calendar:</strong> tap the <strong>Google</strong> button — it opens calendar.google.com with an "Add this calendar?" prompt.</li>
+        <li><strong>Outlook:</strong> tap the <strong>Outlook</strong> button — it opens Outlook on the web to subscribe from URL directly.</li>
+        <li><strong>Anything else</strong> (Thunderbird, other apps): tap <strong>Copy link</strong> and paste it into that app's "subscribe from URL" option.</li>
+        <li>Feeds refresh once a day automatically — your calendar app re-checks them on its own schedule (Google/Outlook can take up to 24 hours to pick up changes; Apple is usually faster).</li>
       </ol>
     </div>
 
@@ -325,5 +309,99 @@
     </footer>
 
   </div>
+
+<script>
+  const GAME_LABELS = {
+    lol: "League of Legends",
+    valorant: "Valorant",
+  };
+
+  // Resolve the directory this page is served from, so links work
+  // regardless of domain/repo name — no hardcoding required.
+  function baseUrl() {
+    return new URL(".", window.location.href).href;
+  }
+
+  function buildLinks(icsAbsoluteUrl, name) {
+    const webcalUrl = icsAbsoluteUrl.replace(/^https?:\/\//, "webcal://");
+    const googleUrl = `https://calendar.google.com/calendar/r?cid=${webcalUrl}`;
+    const outlookUrl = `https://outlook.office.com/calendar/0/addfromweb?url=${encodeURIComponent(webcalUrl)}&name=${encodeURIComponent(name)}`;
+    return { webcalUrl, googleUrl, outlookUrl };
+  }
+
+  function cardHtml(entry) {
+    const icsAbsoluteUrl = baseUrl() + entry.file;
+    const { webcalUrl, googleUrl, outlookUrl } = buildLinks(icsAbsoluteUrl, entry.name);
+    const color = entry.color || "cyan";
+
+    return `
+      <div class="card" style="--tag-color: var(--${color})">
+        <div class="card-top">
+          <div class="card-main">
+            <span class="card-tag">${GAME_LABELS[entry.game] || entry.game}</span>
+            <span class="card-title">${entry.name}</span>
+            <span class="card-sub">${entry.description || ""}</span>
+          </div>
+        </div>
+        <div class="card-actions">
+          <a class="btn primary" href="${webcalUrl}">Apple</a>
+          <a class="btn" href="${googleUrl}" target="_blank" rel="noopener">Google</a>
+          <a class="btn" href="${outlookUrl}" target="_blank" rel="noopener">Outlook</a>
+          <button class="btn copy-btn" data-url="${icsAbsoluteUrl}">Copy link</button>
+        </div>
+      </div>
+    `;
+  }
+
+  function render(calendars) {
+    const container = document.getElementById("calendar-sections");
+
+    if (!calendars.length) {
+      container.innerHTML = `<div class="empty-state">No calendars configured yet — add one in calendars.yaml.</div>`;
+      return;
+    }
+
+    const groups = [];
+    const seen = new Set();
+    for (const cal of calendars) {
+      if (!seen.has(cal.game)) {
+        seen.add(cal.game);
+        groups.push(cal.game);
+      }
+    }
+
+    container.innerHTML = groups.map(game => {
+      const items = calendars.filter(c => c.game === game);
+      return `
+        <div class="section-label"><span class="title">${GAME_LABELS[game] || game}</span></div>
+        <div class="grid">${items.map(cardHtml).join("")}</div>
+      `;
+    }).join("");
+
+    container.querySelectorAll(".copy-btn").forEach(btn => {
+      btn.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(btn.dataset.url);
+          btn.textContent = "Copied!";
+          btn.classList.add("copied");
+          setTimeout(() => { btn.textContent = "Copy link"; btn.classList.remove("copied"); }, 1800);
+        } catch (e) {
+          prompt("Copy this link:", btn.dataset.url);
+        }
+      });
+    });
+  }
+
+  fetch("calendars.json")
+    .then(res => {
+      if (!res.ok) throw new Error(`calendars.json returned ${res.status}`);
+      return res.json();
+    })
+    .then(render)
+    .catch(err => {
+      document.getElementById("calendar-sections").innerHTML =
+        `<div class="error-state">Couldn't load calendars.json (${err.message}). Run the "Update calendars" workflow at least once to generate it.</div>`;
+    });
+</script>
 </body>
 </html>

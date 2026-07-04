@@ -1,9 +1,10 @@
 """
-Reads calendars.yaml and generates every configured .ics file.
-Run manually with: python generate.py
-Run automatically via .github/workflows/update.yml on a schedule.
+Reads calendars.yaml and generates every configured .ics file, plus a
+calendars.json manifest that docs/index.html reads to render subscribe
+cards automatically — add/remove a calendar by editing calendars.yaml only.
 """
 
+import json
 import os
 import sys
 
@@ -12,6 +13,7 @@ import yaml
 from scraper import build_calendar, get_events, save_calendar
 
 CONFIG_PATH = "calendars.yaml"
+MANIFEST_PATH = "docs/calendars.json"
 
 # Keys that get passed to get_events() vs build_calendar() respectively.
 EVENT_FILTER_KEYS = {
@@ -20,6 +22,13 @@ EVENT_FILTER_KEYS = {
 }
 CALENDAR_BUILD_KEYS = {
     "cal_name", "text_header", "include_league_tag", "add_reminder_minutes",
+}
+
+# Default accent color per game, used by the webpage — override per-calendar
+# in calendars.yaml with a "color" key (any valid CSS color) if you want.
+DEFAULT_COLORS = {
+    "lol": "cyan",
+    "valorant": "violet",
 }
 
 
@@ -31,6 +40,7 @@ def main():
         print("No calendars defined in calendars.yaml — nothing to do.")
         return
 
+    manifest = []
     had_error = False
 
     for cfg in configs:
@@ -52,9 +62,25 @@ def main():
             cal = build_calendar(events, **build_kwargs)
             save_calendar(cal, output)
 
+            # Path relative to docs/, since that's what gets served — e.g.
+            # "docs/lck.ics" -> "lck.ics"
+            relative_path = os.path.relpath(output, "docs")
+
+            manifest.append({
+                "name": cfg.get("cal_name", name),
+                "game": game,
+                "file": relative_path,
+                "description": cfg.get("description", f"{len(events)} matches"),
+                "color": cfg.get("color", DEFAULT_COLORS.get(game, "cyan")),
+            })
+
         except Exception as exc:
             had_error = True
             print(f"  ERROR building '{name}': {exc}", file=sys.stderr)
+
+    with open(MANIFEST_PATH, "w") as f:
+        json.dump(manifest, f, indent=2)
+    print(f"\nWrote manifest with {len(manifest)} calendars to {MANIFEST_PATH}")
 
     if had_error:
         # Non-zero exit so a failing calendar shows up as a failed GitHub
