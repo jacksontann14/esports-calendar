@@ -4,6 +4,7 @@ Fetches match schedules, normalizes them into a common format, filters,
 and exports to .ics calendar files.
 """
 
+import os
 import re
 import uuid
 from datetime import datetime, timedelta, timezone
@@ -16,12 +17,13 @@ from icalendar import Alarm, Calendar, Event
 # CONFIG
 # ============================================================
 
-LOL_API_KEY = "0TvQnueqKa5mxJntVWt0w4LpLfEkrV1Ta8rQBb9Z"
+LOL_API_KEY = os.environ.get("LOL_API_KEY", "YOUR_HENRIKDEV_API_KEY")
 LOL_BASE_URL = "https://esports-api.lolesports.com/persisted/gw"
 LOL_HEADERS = {"x-api-key": LOL_API_KEY}
 
 # Get your own free key at https://api.henrikdev.xyz/dashboard (requires joining their Discord)
-VALORANT_API_KEY = "YOUR_HENRIKDEV_API_KEY"
+VALORANT_API_KEY = os.environ.get("VALORANT_API_KEY", "YOUR_HENRIKDEV_API_KEY")
+
 VALORANT_BASE_URL = "https://api.henrikdev.xyz/valorant/v1/esports/schedule"
 VALORANT_HEADERS = {"Authorization": VALORANT_API_KEY}
 
