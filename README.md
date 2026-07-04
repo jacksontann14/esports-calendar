@@ -74,7 +74,33 @@ GitHub Actions and served as static `.ics` files via GitHub Pages.
   python generate.py
   ```
 
-## Notes
+## Troubleshooting
+
+### VALORANT 401 Unauthorized in GitHub Actions
+Confirm the `VALORANT_API_KEY` secret actually exists (Settings → Secrets
+and variables → Actions) and that `.github/workflows/update.yml`'s
+"Generate calendars" step has the matching `env:` block. Both need to be
+in place — the secret alone does nothing without the workflow reading it.
+
+### LoL 403 Forbidden in GitHub Actions (but works locally)
+This is almost always **not** a key problem — it's the request's source IP
+being blocked by bot/WAF protection, and GitHub Actions' shared runner IP
+ranges are commonly blocked by this kind of protection even with valid
+credentials and headers. If the exact same code works when you run
+`python generate.py` locally but fails only in Actions, that's a strong
+confirmation.
+
+Options, cheapest first:
+1. **Run `generate.py` on your own machine on a schedule** (cron / Task
+   Scheduler) instead of GitHub Actions, then have that machine
+   `git add`, `commit`, and `push` the result. Everything else (Pages
+   hosting, subscribe links) keeps working unchanged.
+2. **Use a self-hosted Actions runner** on a machine you control
+   (`runs-on: self-hosted` in the workflow) so the automation stays in
+   GitHub Actions but executes from your IP instead of GitHub's shared pool.
+3. **Route through a small VPS** you control as a proxy.
+
+
 
 - GitHub Actions free tier gives 2,000 minutes/month — this job takes
   seconds per run, so even hourly runs are far under the limit.

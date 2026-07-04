@@ -25,6 +25,9 @@ jobs:
 
       - name: Generate calendars
         run: python generate.py
+        env:
+          VALORANT_API_KEY: ${{ secrets.VALORANT_API_KEY }}
+          LOL_API_KEY: ${{ secrets.LOL_API_KEY }}
 
       - name: Commit and push updated .ics files
         run: |
