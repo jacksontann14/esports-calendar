@@ -21,40 +21,30 @@
 #   add_reminder_minutes - int, popup reminder N minutes before match start
 # ============================================================
 
-- name: "LCK Full Season"
-  output: "docs/lck.ics"
-  game: "lol"
-  regions: ["LCK"]
-  exclude_tbd: false
-  cal_name: "LCK Schedule"
-  include_league_tag: true
-
-- name: "MSI Confirmed Matches Only"
+- name: "MSI 2026"
   output: "docs/msi.ics"
   game: "lol"
   regions: ["MSI"]
   exclude_tbd: true
   cal_name: "MSI Schedule"
-  text_header: "MSI Watch"
   include_league_tag: false
   add_reminder_minutes: 30
 
-- name: "T1 Game Day"
-  output: "docs/t1_schedule.ics"
+- name: "LPL - BLG"
+  output: "docs/blg_lpl.ics"
   game: "lol"
-  team: "T1"
+  team: "BLG"
   days_ahead: 30
   exclude_tbd: true
-  cal_name: "T1 Schedule"
-  text_header: "T1 Game Day"
-  include_league_tag: false
+  cal_name: "LPL - BLG Games"
+  include_league_tag: true
   add_reminder_minutes: 30
 
-- name: "PRX / VCT Pacific"
+- name: "VCT Pacific - PRX"
   output: "docs/prx_pacific.ics"
   game: "valorant"
-  regions: ["pacific"]
-  team: "PRX"
-  cal_name: "PRX / Pacific"
+  regions: ["vct_pacific"]
+  team: "Paper Rex"
+  cal_name: "PRX Games"
   text_header: "PRX Game Day"
   include_league_tag: false

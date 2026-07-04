@@ -115,23 +115,49 @@ def _lol_raw_schedule(league_ids=None):
     return events
 
 
-def _valorant_raw_schedule(force_refresh=False):
-    """Fetches the full unfiltered schedule. Filtering happens client-side
-    in get_events() since HenrikDev's documented region/league enums are
-    stale and shouldn't be trusted as authoritative."""
-    if _valorant_cache["data"] is not None and not force_refresh:
+def _valorant_raw_schedule(league=None, region=None, force_refresh=False):
+    """
+    Fetch the VALORANT schedule.
+
+    If league/region is supplied, pass it directly to HenrikDev so the API
+    returns the full schedule for that league instead of the default limited
+    schedule.
+    """
+    # Only use cache for the unfiltered schedule
+    if (
+        league is None
+        and region is None
+        and _valorant_cache["data"] is not None
+        and not force_refresh
+    ):
         return _valorant_cache["data"]
-    resp = requests.get(VALORANT_BASE_URL, headers=VALORANT_HEADERS)
+
+    params = {}
+
+    if league:
+        params["league"] = league
+
+    if region:
+        params["region"] = region
+
+    resp = requests.get(
+        VALORANT_BASE_URL,
+        headers=VALORANT_HEADERS,
+        params=params if params else None,
+    )
+
     if resp.status_code == 401:
         raise RuntimeError(
-            "VALORANT API returned 401 Unauthorized — check VALORANT_API_KEY is a "
-            "real key from https://api.henrikdev.xyz/dashboard/, that "
-            "VALORANT_HEADERS was rebuilt after setting it, and check "
-            "https://status.henrikdev.xyz/ for outages."
+            "VALORANT API returned 401 Unauthorized..."
         )
+
     resp.raise_for_status()
+
     data = resp.json()["data"]
-    _valorant_cache["data"] = data
+
+    if league is None and region is None:
+        _valorant_cache["data"] = data
+
     return data
 
 
@@ -275,11 +301,23 @@ def get_events(
         raw_events = _lol_raw_schedule(league_ids)
         events = [e for e in (_normalize_lol_event(r) for r in raw_events) if e]
     elif game == "valorant":
-        raw_events = _valorant_raw_schedule(force_refresh=force_refresh)
-        events = [e for e in (_normalize_valorant_event(r) for r in raw_events) if e]
+        league = None
+
         if regions:
-            queries = [regions] if isinstance(regions, str) else regions
-            events = [ev for ev in events if any(_matches_region_query(ev, q) for q in queries)]
+            # treat the regions argument as HenrikDev's league parameter
+            if isinstance(regions, str):
+                league = regions
+            else:
+                # if multiple are supplied, HenrikDev accepts comma-separated values
+                league = ",".join(regions)
+
+        raw_events = _valorant_raw_schedule(
+            league=league,
+            force_refresh=force_refresh,
+        )
+
+        events = [e for e in (_normalize_valorant_event(r) for r in raw_events) if e]
+
     else:
         raise ValueError(f"Unsupported game '{game}'. Choose from {SUPPORTED_GAMES}")
 
