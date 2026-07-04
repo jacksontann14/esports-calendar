@@ -4,6 +4,7 @@
     "game": "lol",
     "file": "msi.ics",
     "description": "Confirmed matches for the knockout stage",
+    "league": "MSI",
     "color": "cyan"
   },
   {
@@ -11,6 +12,7 @@
     "game": "lol",
     "file": "blg_lpl.ics",
     "description": "LPL Split 3 matches involving BLG",
+    "league": "LPL",
     "color": "cyan"
   },
 
@@ -19,6 +21,7 @@
     "game": "valorant",
     "file": "prx_pacific.ics",
     "description": "VCT Pacific matches involving PRX",
+    "league": "VCT Pacific",
     "color": "violet"
   }
 ]
