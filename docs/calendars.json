@@ -2,16 +2,16 @@
   {
     "name": "MSI 2026",
     "game": "lol",
-    "file": "msi.ics",
-    "description": "Confirmed matches for the knockout stage",
+    "file": "internationals.ics",
+    "description": "Upcoming international matches",
     "league": "MSI",
     "color": "cyan"
   },
   {
-    "name": "BLG Split 3 Matches",
+    "name": "BLG Matches",
     "game": "lol",
     "file": "blg_lpl.ics",
-    "description": "LPL Split 3 matches involving BLG",
+    "description": "LPL matches involving BLG",
     "league": "LPL",
     "color": "cyan"
   },
@@ -19,9 +19,9 @@
   {
     "name": "PRX Game Day",
     "game": "valorant",
-    "file": "prx_pacific.ics",
-    "description": "VCT Pacific matches involving PRX",
-    "league": "VCT Pacific",
+    "file": "prx_vct.ics",
+    "description": "VCT matches involving PRX",
+    "league": "VCT",
     "color": "violet"
   }
 ]

@@ -147,6 +147,12 @@ def _valorant_fetch_league(identifier, force_refresh=False):
     complete schedule instead of the capped default — this is what avoids
     the truncation bug, as long as `identifier` is the exact string
     HenrikDev expects (see _valorant_resolve_identifiers below).
+
+    If the identifier isn't recognized (400 Bad Request — common for
+    one-off international events like Masters/Champions, which are often
+    tagged per-edition rather than as a stable slug), this prints a
+    warning and returns an empty list instead of raising, so one bad
+    identifier in a multi-region call doesn't wipe out the rest.
     """
     if not force_refresh and identifier in _valorant_cache["by_league"]:
         return _valorant_cache["by_league"][identifier]
@@ -157,6 +163,17 @@ def _valorant_fetch_league(identifier, force_refresh=False):
             "VALORANT API returned 401 Unauthorized — check VALORANT_API_KEY is a "
             "real key from https://api.henrikdev.xyz/dashboard/."
         )
+    if resp.status_code == 400:
+        print(
+            f"Warning: VALORANT API rejected league identifier '{identifier}' "
+            f"(400 Bad Request) — skipping it. This usually means it isn't an "
+            f"exact identifier HenrikDev recognizes. One-off international "
+            f"events (Masters, Champions) are often tagged per-edition rather "
+            f"than a stable generic name — check _valorant_discover() output "
+            f"while the event is actually live to find the real identifier."
+        )
+        _valorant_cache["by_league"][identifier] = []
+        return []
     resp.raise_for_status()
     data = resp.json()["data"]
     _valorant_cache["by_league"][identifier] = data
@@ -186,6 +203,12 @@ def _valorant_resolve_identifiers(query, force_refresh=False):
     if not matches:
         # Not found in the current discovery sample — best-effort fallback,
         # try the query as a literal identifier rather than failing outright.
+        print(
+            f"Note: '{query}' wasn't found among currently-live VALORANT "
+            f"league identifiers — trying it as a literal identifier. If "
+            f"this fails, the league may use a different exact slug (or, "
+            f"for one-off events like Masters/Champions, a per-edition name)."
+        )
         return [query]
     return matches
 
@@ -276,9 +299,9 @@ def list_teams(game, region=None, force_refresh=False):
     if game == "lol":
         teams = _lol_get_teams()
         if region:
-            teams = [t for t in teams if region.lower() in t.get("homeLeague", {}).get("name", "").lower()]
+            teams = [t for t in teams if region.lower() in (t.get("homeLeague") or {}).get("name", "").lower()]
         for t in sorted(teams, key=lambda x: x.get("code") or ""):
-            print(f"{t.get('code', '???'):<8} {t['name']:<25} region={t.get('homeLeague', {}).get('name', 'N/A')}")
+            print(f"{t.get('code', '???'):<8} {t['name']:<25} region={(t.get('homeLeague') or {}).get('name', 'N/A')}")
         return teams
 
     if game == "valorant":

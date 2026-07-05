@@ -1,1 +1,10 @@
+# Local-only reference manual — not part of the public-facing repo
+SETUP.md
+
+# Python
+__pycache__/
+*.pyc
+
+# Jupyter
+.ipynb_checkpoints/
 test_notebook.ipynb

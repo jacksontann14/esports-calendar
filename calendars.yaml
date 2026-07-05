@@ -31,33 +31,36 @@
 # fetched, so it always reflects real data rather than what you typed.
 # ============================================================
 
-- name: "MSI 2026"
-  output: "docs/msi.ics"
+- name: "Internationals"
+  output: "docs/internationals.ics"
   game: "lol"
-  regions: ["MSI"]
+  regions: ["First Stand", "MSI", "Worlds", "Worlds Qualifying Series", "Esports World Cup"]
   exclude_tbd: true
-  cal_name: "MSI Schedule"
-  description: "Confirmed matches for the knockout stage"
-  include_league_tag: false
-  add_reminder_minutes: 30
-
-- name: "BLG Split 3 Matches"
-  output: "docs/blg_lpl.ics"
-  game: "lol"
-  team: "BLG"
-  days_ahead: 30
-  exclude_tbd: true
-  cal_name: "LPL - BLG Games"
-  description: "LPL Split 3 matches involving BLG"
+  cal_name: "Internationals Schedule"
+  description: "Upcoming international matches"
+  states: ["inProgress", "unstarted"]
   include_league_tag: true
   add_reminder_minutes: 30
 
-- name: "VCT Pacific - PRX"
-  output: "docs/prx_pacific.ics"
+- name: "BLG Matches"
+  output: "docs/blg_lpl.ics"
+  game: "lol"
+  team: "BILIBILI GAMING"
+  days_ahead: 30
+  cal_name: "LPL - BLG Games"
+  description: "LPL matches involving BLG"
+  states: ["inProgress", "unstarted"]
+  include_league_tag: true
+  add_reminder_minutes: 30
+
+- name: "PRX Games"
+  output: "docs/prx_vct.ics"
   game: "valorant"
-  regions: ["vct_pacific"]
+  regions: ["ewc_val", "vct_pacific", "masters", "champions"]
   team: "Paper Rex"
   cal_name: "PRX Games"
-  description: "VCT Pacific matches involving PRX"
+  description: "VCT Matches involving PRX"
+  states: ["inProgress", "unstarted"]
   text_header: "PRX Game Day"
-  include_league_tag: false
+  include_league_tag: true
+  add_reminder_minutes: 30
