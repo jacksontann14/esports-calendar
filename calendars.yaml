@@ -34,7 +34,7 @@
 - name: "FS, MSI, Worlds, EWC"
   output: "docs/internationals.ics"
   game: "lol"
-  regions: "Internationals"
+  regions: ["First Stand", "MSI", "Worlds", "Esports World Cup"]
   exclude_tbd: true
   cal_name: "Internationals Schedule"
   description: "Upcoming international matches"
@@ -45,6 +45,7 @@
 - name: "BLG Matches"
   output: "docs/blg_lpl.ics"
   game: "lol"
+  regions: ["LPL"]
   team: "BILIBILI GAMING"
   days_ahead: 30
   cal_name: "LPL - BLG Games"
