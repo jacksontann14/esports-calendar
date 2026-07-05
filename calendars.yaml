@@ -31,10 +31,10 @@
 # fetched, so it always reflects real data rather than what you typed.
 # ============================================================
 
-- name: "Internationals"
+- name: "FS, MSI, Worlds, EWC"
   output: "docs/internationals.ics"
   game: "lol"
-  regions: ["First Stand", "MSI", "Worlds", "Worlds Qualifying Series", "Esports World Cup"]
+  regions: "Internationals"
   exclude_tbd: true
   cal_name: "Internationals Schedule"
   description: "Upcoming international matches"

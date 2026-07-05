@@ -1,10 +1,10 @@
 [
   {
-    "name": "Internationals",
+    "name": "FS, MSI, Worlds, EWC",
     "game": "lol",
     "file": "internationals.ics",
     "description": "Upcoming international matches",
-    "league": ["First Stand", "MSI", "Worlds", "EWC"],
+    "league": "Internationals",
     "color": "cyan"
   },
   {
