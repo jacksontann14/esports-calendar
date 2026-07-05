@@ -1,10 +1,10 @@
 [
   {
-    "name": "MSI 2026",
+    "name": "Internationals",
     "game": "lol",
     "file": "internationals.ics",
     "description": "Upcoming international matches",
-    "league": "MSI",
+    "league": ["First Stand", "MSI", "Worlds", "EWC"],
     "color": "cyan"
   },
   {
