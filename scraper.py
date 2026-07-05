@@ -4,10 +4,13 @@ Fetches match schedules, normalizes them into a common format, filters,
 and exports to .ics calendar files.
 """
 
+from __future__ import annotations
+
 import os
 import re
 import uuid
 from datetime import datetime, timedelta, timezone
+from typing import Any, Final
 from zoneinfo import ZoneInfo
 
 import requests
@@ -17,42 +20,53 @@ from icalendar import Alarm, Calendar, Event
 # CONFIG
 # ============================================================
 
-LOL_API_KEY = os.environ.get("LOL_API_KEY", "YOUR_HENRIKDEV_API_KEY")
-LOL_BASE_URL = "https://esports-api.lolesports.com/persisted/gw"
-LOL_HEADERS = {"x-api-key": LOL_API_KEY}
+LOL_API_KEY: Final[str] = os.environ.get("LOL_API_KEY", "YOUR_HENRIKDEV_API_KEY")
+LOL_BASE_URL: Final[str] = "https://esports-api.lolesports.com/persisted/gw"
+LOL_HEADERS: Final[dict[str, str]] = {"x-api-key": LOL_API_KEY}
 
 # Get your own free key at https://api.henrikdev.xyz/dashboard (requires joining their Discord)
-VALORANT_API_KEY = os.environ.get("VALORANT_API_KEY", "YOUR_HENRIKDEV_API_KEY")
+VALORANT_API_KEY: Final[str] = os.environ.get("VALORANT_API_KEY", "YOUR_HENRIKDEV_API_KEY")
+VALORANT_BASE_URL: Final[str] = "https://api.henrikdev.xyz/valorant/v1/esports/schedule"
+VALORANT_HEADERS: Final[dict[str, str]] = {"Authorization": VALORANT_API_KEY}
 
-VALORANT_BASE_URL = "https://api.henrikdev.xyz/valorant/v1/esports/schedule"
-VALORANT_HEADERS = {"Authorization": VALORANT_API_KEY}
-
-SUPPORTED_GAMES = {"lol", "valorant"}
+SUPPORTED_GAMES: Final[set[str]] = {"lol", "valorant"}
 
 # VALORANT's unfiltered schedule call is truncated/capped by HenrikDev — it's
 # only used to discover which league identifiers are currently live, never
 # as a source of a complete match list. Passing an exact `league` param
 # returns that league's full schedule instead. Cache both separately.
-_valorant_cache = {"unfiltered": None, "by_league": {}}
+_valorant_cache: dict[str, Any] = {"unfiltered": None, "by_league": {}}
+
+# Public API re-exported by `from scraper import *` — mainly for readability;
+# every function below is importable directly regardless of this list.
+__all__ = [
+    "list_regions",
+    "list_teams",
+    "get_events",
+    "print_schedule",
+    "build_calendar",
+    "save_calendar",
+    "refresh_calendar",
+]
 
 
 # ============================================================
 # INTERNAL HELPERS
 # ============================================================
 
-def _parse_iso(timestamp):
+def _parse_iso(timestamp: str) -> datetime:
     """Parse ISO 8601 timestamps whether they end in 'Z' or '+00:00'."""
     timestamp = timestamp.replace("Z", "+00:00")
     dt = datetime.fromisoformat(timestamp)
     return dt if dt.tzinfo else dt.replace(tzinfo=timezone.utc)
 
 
-def _norm(text):
+def _norm(text: str | None) -> str:
     """Lowercase and strip spaces/underscores, for loose string matching."""
     return re.sub(r"[\s_]+", "", (text or "").lower())
 
 
-def _estimate_duration(format_str):
+def _estimate_duration(format_str: str | None) -> timedelta:
     """Rough match duration based on best-of count in the format string."""
     match = re.search(r"(\d+)", format_str or "")
     count = int(match.group(1)) if match else 3
@@ -60,7 +74,7 @@ def _estimate_duration(format_str):
     return durations.get(count, timedelta(hours=1, minutes=30))
 
 
-def _to_utc(dt):
+def _to_utc(dt: datetime | None) -> datetime | None:
     """Ensure a datetime is timezone-aware in UTC."""
     if dt is None:
         return None
@@ -71,19 +85,36 @@ def _to_utc(dt):
 # RAW FETCHERS (private — not called directly by users)
 # ============================================================
 
-def _lol_get_leagues():
-    resp = requests.get(f"{LOL_BASE_URL}/getLeagues", headers=LOL_HEADERS, params={"hl": "en-US"})
+def _lol_check_response(resp: requests.Response) -> None:
+    """
+    Raise a clear, actionable error for LoL API responses instead of a bare
+    HTTPError. Used by every LoL request so error handling stays consistent
+    across getLeagues / getTeams / getSchedule.
+    """
+    if resp.status_code == 403:
+        raise RuntimeError(
+            "LoL API returned 403 Forbidden. This usually isn't a key problem — "
+            "it's a strong signal that the request's source IP is being blocked "
+            "by bot/WAF protection. This is common when the same request that "
+            "works fine locally fails only when run from a cloud CI runner "
+            "(GitHub Actions, etc.), since those IP ranges are widely blocked."
+        )
     resp.raise_for_status()
+
+
+def _lol_get_leagues() -> list[dict[str, Any]]:
+    resp = requests.get(f"{LOL_BASE_URL}/getLeagues", headers=LOL_HEADERS, params={"hl": "en-US"})
+    _lol_check_response(resp)
     return resp.json()["data"]["leagues"]
 
 
-def _lol_get_teams():
+def _lol_get_teams() -> list[dict[str, Any]]:
     resp = requests.get(f"{LOL_BASE_URL}/getTeams", headers=LOL_HEADERS, params={"hl": "en-US"})
-    resp.raise_for_status()
+    _lol_check_response(resp)
     return resp.json()["data"]["teams"]
 
 
-def _lol_find_league_ids(region_names):
+def _lol_find_league_ids(region_names: str | list[str]) -> list[str]:
     region_names = [region_names] if isinstance(region_names, str) else region_names
     leagues = _lol_get_leagues()
     matched = []
@@ -98,26 +129,61 @@ def _lol_find_league_ids(region_names):
     return matched
 
 
-def _lol_raw_schedule(league_ids=None):
-    events, page_token = [], None
-    params = {"hl": "en-US"}
-    if league_ids:
-        params["leagueId"] = league_ids
+def _lol_raw_schedule_single(league_id: str | None = None) -> list[dict[str, Any]]:
+    """
+    Fetch the paginated schedule for AT MOST one league id (or the default
+    unfiltered schedule if None). Kept separate from `_lol_raw_schedule` so
+    multi-league calls can fetch one league at a time — see that function's
+    docstring for why.
+    """
+    events: list[dict[str, Any]] = []
+    page_token: str | None = None
+    params: dict[str, Any] = {"hl": "en-US"}
+    if league_id:
+        params["leagueId"] = [league_id]
+
     while True:
         if page_token:
             params["pageToken"] = page_token
         resp = requests.get(f"{LOL_BASE_URL}/getSchedule", headers=LOL_HEADERS, params=params)
-        resp.raise_for_status()
+        _lol_check_response(resp)
         schedule = resp.json()["data"]["schedule"]
         events.extend(schedule["events"])
         older_token = schedule.get("pages", {}).get("older")
         if not older_token or older_token == page_token:
             break
         page_token = older_token
+
     return events
 
 
-def _valorant_discover(force_refresh=False):
+def _lol_raw_schedule(league_ids: list[str] | None = None) -> list[dict[str, Any]]:
+    """
+    Fetch the schedule across one or more league ids.
+
+    IMPORTANT: sending multiple leagueId values in a single request appears
+    to only be honored for the LAST one (observed behavior — passing
+    ["id1", "id2", "id3"] only returns matches for the last id), so each
+    league is fetched in its own separate request and the results are
+    merged and deduplicated by match id.
+    """
+    if not league_ids:
+        return _lol_raw_schedule_single(None)
+
+    all_events: list[dict[str, Any]] = []
+    seen_match_ids: set[str] = set()
+    for league_id in league_ids:
+        for ev in _lol_raw_schedule_single(league_id):
+            match_id = ev.get("match", {}).get("id")
+            if match_id and match_id in seen_match_ids:
+                continue
+            if match_id:
+                seen_match_ids.add(match_id)
+            all_events.append(ev)
+    return all_events
+
+
+def _valorant_discover(force_refresh: bool = False) -> list[dict[str, Any]]:
     """
     Fetch the unfiltered schedule — HenrikDev truncates/caps this response,
     so it's used ONLY to discover which league identifiers are currently
@@ -140,13 +206,13 @@ def _valorant_discover(force_refresh=False):
     return data
 
 
-def _valorant_fetch_league(identifier, force_refresh=False):
+def _valorant_fetch_league(identifier: str, force_refresh: bool = False) -> list[dict[str, Any]]:
     """
     Fetch the FULL schedule for one exact league identifier (e.g.
     'vct_pacific'). Passing this param to HenrikDev returns that league's
     complete schedule instead of the capped default — this is what avoids
     the truncation bug, as long as `identifier` is the exact string
-    HenrikDev expects (see _valorant_resolve_identifiers below).
+    HenrikDev expects (see `_valorant_resolve_identifiers` below).
 
     If the identifier isn't recognized (400 Bad Request — common for
     one-off international events like Masters/Champions, which are often
@@ -174,13 +240,14 @@ def _valorant_fetch_league(identifier, force_refresh=False):
         )
         _valorant_cache["by_league"][identifier] = []
         return []
+
     resp.raise_for_status()
     data = resp.json()["data"]
     _valorant_cache["by_league"][identifier] = data
     return data
 
 
-def _valorant_resolve_identifiers(query, force_refresh=False):
+def _valorant_resolve_identifiers(query: str, force_refresh: bool = False) -> list[str]:
     """
     Loose-match a user-facing query (e.g. 'china', 'pacific', 'emea')
     against whatever league identifiers are CURRENTLY LIVE in the
@@ -217,7 +284,7 @@ def _valorant_resolve_identifiers(query, force_refresh=False):
 # NORMALIZERS -> unified event dict shape
 # ============================================================
 
-def _normalize_lol_event(raw):
+def _normalize_lol_event(raw: dict[str, Any]) -> dict[str, Any] | None:
     match = raw.get("match")
     if not match:
         return None
@@ -235,7 +302,7 @@ def _normalize_lol_event(raw):
     }
 
 
-def _normalize_valorant_event(raw):
+def _normalize_valorant_event(raw: dict[str, Any]) -> dict[str, Any] | None:
     match = raw.get("match")
     if not match:
         return None
@@ -254,7 +321,7 @@ def _normalize_valorant_event(raw):
     }
 
 
-def _matches_region_query(event, query):
+def _matches_region_query(event: dict[str, Any], query: str) -> bool:
     q = _norm(query)
     return any(q in _norm(field) for field in (event["league"], event["identifier"], event["region"]))
 
@@ -263,7 +330,7 @@ def _matches_region_query(event, query):
 # PUBLIC API
 # ============================================================
 
-def list_regions(game, force_refresh=False):
+def list_regions(game: str, force_refresh: bool = False) -> list[dict[str, Any]] | dict[str, str]:
     """
     Discovery function: list available region/league identifiers.
     LoL: authoritative, from the real getLeagues endpoint.
@@ -289,7 +356,9 @@ def list_regions(game, force_refresh=False):
     raise ValueError(f"Unsupported game '{game}'. Choose from {SUPPORTED_GAMES}")
 
 
-def list_teams(game, region=None, force_refresh=False):
+def list_teams(
+    game: str, region: str | None = None, force_refresh: bool = False
+) -> list[dict[str, Any]] | dict[str, str]:
     """
     Discovery function: list team codes/names.
     LoL: real team directory (complete, region-independent).
@@ -301,7 +370,8 @@ def list_teams(game, region=None, force_refresh=False):
         if region:
             teams = [t for t in teams if region.lower() in (t.get("homeLeague") or {}).get("name", "").lower()]
         for t in sorted(teams, key=lambda x: x.get("code") or ""):
-            print(f"{t.get('code', '???'):<8} {t['name']:<25} region={(t.get('homeLeague') or {}).get('name', 'N/A')}")
+            home_league = (t.get("homeLeague") or {}).get("name", "N/A")
+            print(f"{t.get('code', '???'):<8} {t['name']:<25} region={home_league}")
         return teams
 
     if game == "valorant":
@@ -315,16 +385,16 @@ def list_teams(game, region=None, force_refresh=False):
 
 
 def get_events(
-    game,
-    regions=None,
-    team=None,
-    days_ahead=None,
-    date_start=None,
-    date_end=None,
-    states=None,
-    exclude_tbd=False,
-    force_refresh=False,
-):
+    game: str,
+    regions: str | list[str] | None = None,
+    team: str | None = None,
+    days_ahead: int | None = None,
+    date_start: datetime | None = None,
+    date_end: datetime | None = None,
+    states: str | list[str] | None = None,
+    exclude_tbd: bool = False,
+    force_refresh: bool = False,
+) -> list[dict[str, Any]]:
     """
     One-stop function to fetch and filter match events for either game.
 
@@ -362,10 +432,11 @@ def get_events(
         league_ids = _lol_find_league_ids(regions) if regions else None
         raw_events = _lol_raw_schedule(league_ids)
         events = [e for e in (_normalize_lol_event(r) for r in raw_events) if e]
+
     elif game == "valorant":
         if regions:
             queries = [regions] if isinstance(regions, str) else regions
-            resolved_identifiers = set()
+            resolved_identifiers: set[str] = set()
             for q in queries:
                 resolved_identifiers.update(_valorant_resolve_identifiers(q, force_refresh=force_refresh))
 
@@ -416,7 +487,7 @@ def get_events(
     return sorted(events, key=lambda ev: ev["start"])
 
 
-def print_schedule(events, local_tz="America/New_York"):
+def print_schedule(events: list[dict[str, Any]], local_tz: str = "America/New_York") -> None:
     """Console preview of events in a local timezone, before exporting."""
     tz = ZoneInfo(local_tz)
     for ev in events:
@@ -425,8 +496,13 @@ def print_schedule(events, local_tz="America/New_York"):
         print(f"{local_time.strftime('%Y-%m-%d %H:%M %Z'):<25} [{ev['game'].upper()}][{ev['league']}] {matchup}")
 
 
-def build_calendar(events, cal_name="Esports Schedule", text_header=None,
-                    include_league_tag=True, add_reminder_minutes=None):
+def build_calendar(
+    events: list[dict[str, Any]],
+    cal_name: str = "Esports Schedule",
+    text_header: str | None = None,
+    include_league_tag: bool = True,
+    add_reminder_minutes: int | None = None,
+) -> Calendar:
     """
     Build an icalendar Calendar object from normalized events.
 
@@ -465,15 +541,22 @@ def build_calendar(events, cal_name="Esports Schedule", text_header=None,
     return cal
 
 
-def save_calendar(cal, filename):
+def save_calendar(cal: Calendar, filename: str) -> None:
     """Write a Calendar object to disk as .ics."""
     with open(filename, "wb") as f:
         f.write(cal.to_ical())
     print(f"Saved {len(cal.subcomponents)} events to {filename}")
 
 
-def refresh_calendar(filename, game, cal_name="Esports Schedule", text_header=None,
-                      include_league_tag=True, add_reminder_minutes=None, **event_filters):
+def refresh_calendar(
+    filename: str,
+    game: str,
+    cal_name: str = "Esports Schedule",
+    text_header: str | None = None,
+    include_league_tag: bool = True,
+    add_reminder_minutes: int | None = None,
+    **event_filters: Any,
+) -> list[dict[str, Any]]:
     """
     Re-fetches live data and overwrites an existing .ics file with updated
     event info — e.g. filling in TBD vs TBD slots once brackets are decided,

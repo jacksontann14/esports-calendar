@@ -35,12 +35,12 @@
   output: "docs/internationals.ics"
   game: "lol"
   regions: ["First Stand", "MSI", "Worlds", "Esports World Cup"]
-  exclude_tbd: true
+  exclude_tbd: false
   cal_name: "Internationals Schedule"
   description: "Upcoming international matches"
   states: ["inProgress", "unstarted"]
   include_league_tag: true
-  add_reminder_minutes: 30
+  add_reminder_minutes: 60
 
 - name: "BLG Matches"
   output: "docs/blg_lpl.ics"
@@ -52,7 +52,7 @@
   description: "LPL matches involving BLG"
   states: ["inProgress", "unstarted"]
   include_league_tag: true
-  add_reminder_minutes: 30
+  add_reminder_minutes: 60
 
 - name: "PRX Games"
   output: "docs/prx_vct.ics"
@@ -64,4 +64,4 @@
   states: ["inProgress", "unstarted"]
   text_header: "PRX Game Day"
   include_league_tag: true
-  add_reminder_minutes: 30
+  add_reminder_minutes: 60
