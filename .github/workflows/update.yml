@@ -2,7 +2,7 @@ name: Update calendars
 
 on:
   schedule:
-    - cron: "0 0 * * *"     # once a day at midnight UTC — adjust as you like
+    - cron: "0 */6 * * *"     # once a day at midnight UTC — adjust as you like
   workflow_dispatch: {}      # lets you trigger a run manually from the Actions tab
   push:
     branches: [main]         # rebuild immediately when you edit calendars.yaml
