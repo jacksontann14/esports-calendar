@@ -53,50 +53,51 @@ TRIGGER:-PT1H
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-SUMMARY:[LOL][Esports World Cup] TBD vs Karmine Corp
+SUMMARY:[LOL][Esports World Cup] Karmine Corp vs Sentinels
 DTSTART:20260716T112000Z
 DTEND:20260716T132000Z
 UID:116855104460702324@lol-scraper
 DESCRIPTION:Format: bestOf\nState: unstarted\nRegion: Esports World Cup
 BEGIN:VALARM
 ACTION:DISPLAY
-DESCRIPTION:Reminder: [LOL][Esports World Cup] TBD vs Karmine Corp
+DESCRIPTION:Reminder: [LOL][Esports World Cup] Karmine Corp vs Sentinels
 TRIGGER:-PT1H
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-SUMMARY:[LOL][Esports World Cup] TBD vs GAM Esports
+SUMMARY:[LOL][Esports World Cup] GAM Esports vs T1
 DTSTART:20260716T112000Z
 DTEND:20260716T132000Z
 UID:116855104460702338@lol-scraper
 DESCRIPTION:Format: bestOf\nState: unstarted\nRegion: Esports World Cup
 BEGIN:VALARM
 ACTION:DISPLAY
-DESCRIPTION:Reminder: [LOL][Esports World Cup] TBD vs GAM Esports
+DESCRIPTION:Reminder: [LOL][Esports World Cup] GAM Esports vs T1
 TRIGGER:-PT1H
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-SUMMARY:[LOL][Esports World Cup] TBD vs Dplus KIA
+SUMMARY:[LOL][Esports World Cup] Dplus KIA vs G2 Esports
 DTSTART:20260716T135000Z
 DTEND:20260716T155000Z
 UID:116855104460702310@lol-scraper
 DESCRIPTION:Format: bestOf\nState: unstarted\nRegion: Esports World Cup
 BEGIN:VALARM
 ACTION:DISPLAY
-DESCRIPTION:Reminder: [LOL][Esports World Cup] TBD vs Dplus KIA
+DESCRIPTION:Reminder: [LOL][Esports World Cup] Dplus KIA vs G2 Esports
 TRIGGER:-PT1H
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-SUMMARY:[LOL][Esports World Cup] TBD vs MIBR.LOS
+SUMMARY:[LOL][Esports World Cup] Beijing JDG Esports vs MIBR.LOS
 DTSTART:20260716T135000Z
 DTEND:20260716T155000Z
 UID:116855104460702352@lol-scraper
 DESCRIPTION:Format: bestOf\nState: unstarted\nRegion: Esports World Cup
 BEGIN:VALARM
 ACTION:DISPLAY
-DESCRIPTION:Reminder: [LOL][Esports World Cup] TBD vs MIBR.LOS
+DESCRIPTION:Reminder: [LOL][Esports World Cup] Beijing JDG Esports vs MIBR
+ .LOS
 TRIGGER:-PT1H
 END:VALARM
 END:VEVENT
