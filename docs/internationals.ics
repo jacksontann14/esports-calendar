@@ -3,14 +3,14 @@ VERSION:2.0
 PRODID:-//esports-scraper//EN
 X-WR-CALNAME:Internationals Schedule
 BEGIN:VEVENT
-SUMMARY:[LOL][Esports World Cup] Hanwha Life Esports vs T1
+SUMMARY:[LOL][Esports World Cup] T1 vs Hanwha Life Esports
 DTSTART:20260717T110000Z
 DTEND:20260717T130000Z
 UID:116855104460702356@lol-scraper
 DESCRIPTION:Format: bestOf\nState: unstarted\nRegion: Esports World Cup
 BEGIN:VALARM
 ACTION:DISPLAY
-DESCRIPTION:Reminder: [LOL][Esports World Cup] Hanwha Life Esports vs T1
+DESCRIPTION:Reminder: [LOL][Esports World Cup] T1 vs Hanwha Life Esports
 TRIGGER:-PT1H
 END:VALARM
 END:VEVENT
