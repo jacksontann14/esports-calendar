@@ -3,50 +3,26 @@ VERSION:2.0
 PRODID:-//esports-scraper//EN
 X-WR-CALNAME:Internationals Schedule
 BEGIN:VEVENT
-SUMMARY:[LOL][Esports World Cup] Karmine Corp vs T1
-DTSTART:20260718T110000Z
-DTEND:20260718T130000Z
-UID:116855104460702372@lol-scraper
-DESCRIPTION:Format: bestOf\nState: inProgress\nRegion: Esports World Cup
-BEGIN:VALARM
-ACTION:DISPLAY
-DESCRIPTION:Reminder: [LOL][Esports World Cup] Karmine Corp vs T1
-TRIGGER:-PT1H
-END:VALARM
-END:VEVENT
-BEGIN:VEVENT
-SUMMARY:[LOL][Esports World Cup] Dplus KIA vs Gen.G Esports
-DTSTART:20260718T133000Z
-DTEND:20260718T153000Z
-UID:116855104460702376@lol-scraper
-DESCRIPTION:Format: bestOf\nState: unstarted\nRegion: Esports World Cup
-BEGIN:VALARM
-ACTION:DISPLAY
-DESCRIPTION:Reminder: [LOL][Esports World Cup] Dplus KIA vs Gen.G Esports
-TRIGGER:-PT1H
-END:VALARM
-END:VEVENT
-BEGIN:VEVENT
-SUMMARY:[LOL][Esports World Cup] TBD vs TBD
+SUMMARY:[LOL][Esports World Cup] Gen.G Esports vs T1
 DTSTART:20260719T100000Z
 DTEND:20260719T120000Z
 UID:116855104460702386@lol-scraper
 DESCRIPTION:Format: bestOf\nState: unstarted\nRegion: Esports World Cup
 BEGIN:VALARM
 ACTION:DISPLAY
-DESCRIPTION:Reminder: [LOL][Esports World Cup] TBD vs TBD
+DESCRIPTION:Reminder: [LOL][Esports World Cup] Gen.G Esports vs T1
 TRIGGER:-PT1H
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-SUMMARY:[LOL][Esports World Cup] TBD vs TBD
+SUMMARY:[LOL][Esports World Cup] Dplus KIA vs Karmine Corp
 DTSTART:20260719T123000Z
 DTEND:20260719T143000Z
 UID:116855104460702380@lol-scraper
 DESCRIPTION:Format: bestOf\nState: unstarted\nRegion: Esports World Cup
 BEGIN:VALARM
 ACTION:DISPLAY
-DESCRIPTION:Reminder: [LOL][Esports World Cup] TBD vs TBD
+DESCRIPTION:Reminder: [LOL][Esports World Cup] Dplus KIA vs Karmine Corp
 TRIGGER:-PT1H
 END:VALARM
 END:VEVENT
