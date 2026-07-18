@@ -7,7 +7,7 @@ SUMMARY:[LOL][Esports World Cup] Karmine Corp vs T1
 DTSTART:20260718T110000Z
 DTEND:20260718T130000Z
 UID:116855104460702372@lol-scraper
-DESCRIPTION:Format: bestOf\nState: unstarted\nRegion: Esports World Cup
+DESCRIPTION:Format: bestOf\nState: inProgress\nRegion: Esports World Cup
 BEGIN:VALARM
 ACTION:DISPLAY
 DESCRIPTION:Reminder: [LOL][Esports World Cup] Karmine Corp vs T1
