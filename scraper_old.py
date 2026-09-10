@@ -249,24 +249,27 @@ def _valorant_fetch_league(identifier: str, force_refresh: bool = False) -> list
 
 def _valorant_resolve_identifiers(query: str, force_refresh: bool = False) -> list[str]:
     """
-    Loose-match a user-facing query against currently-live HenrikDev league
-    identifiers. If discovery fails, fall back to treating the query itself
-    as an exact league identifier.
-    """
-    try:
-        raw = _valorant_discover(force_refresh=force_refresh)
-    except requests.RequestException as exc:
-        print(
-            f"Warning: VALORANT league discovery failed ({exc}); "
-            f"trying '{query}' directly as a league identifier."
-        )
-        return [query]
+    Loose-match a user-facing query (e.g. 'china', 'pacific', 'emea')
+    against whatever league identifiers are CURRENTLY LIVE in the
+    (truncated) discovery call, and return the exact identifier string(s)
+    HenrikDev expects for the `league` param.
 
+    If nothing matches (e.g. the league exists but has no matches in the
+    current discovery window, so it never showed up to match against),
+    falls back to treating the query itself as the identifier — this lets
+    you pass a known-exact slug like 'vct_pacific' directly even when
+    discovery can't confirm it.
+    """
+    raw = _valorant_discover(force_refresh=force_refresh)
     events = [e for e in (_normalize_valorant_event(r) for r in raw) if e]
     live_identifiers = {ev["identifier"] for ev in events if ev["identifier"]}
+
     q = _norm(query)
     matches = [ident for ident in live_identifiers if q in _norm(ident)]
+
     if not matches:
+        # Not found in the current discovery sample — best-effort fallback,
+        # try the query as a literal identifier rather than failing outright.
         print(
             f"Note: '{query}' wasn't found among currently-live VALORANT "
             f"league identifiers — trying it as a literal identifier. If "
