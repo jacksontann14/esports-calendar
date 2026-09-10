@@ -3,15 +3,16 @@ VERSION:2.0
 PRODID:-//esports-scraper//EN
 X-WR-CALNAME:PRX Games
 BEGIN:VEVENT
-SUMMARY:PRX Game Day: [VALORANT][Champions] Team Liquid vs Paper Rex
-DTSTART:20260924T090000Z
-DTEND:20260924T110000Z
-UID:115576361461077169@valorant-scraper
-DESCRIPTION:Format: bestOf 3\nState: unstarted\nRegion: INTERNATIONAL
+SUMMARY:PRX Game Day: [VALORANT][Valorant Champions 2026] Team Liquid vs P
+ aper Rex
+DTSTART:20260924T110000Z
+DTEND:20260924T130000Z
+UID:753455@valorant-scraper
+DESCRIPTION:Format: Opening (C)\nState: unstarted\nRegion: cn
 BEGIN:VALARM
 ACTION:DISPLAY
-DESCRIPTION:Reminder: PRX Game Day: [VALORANT][Champions] Team Liquid vs P
- aper Rex
+DESCRIPTION:Reminder: PRX Game Day: [VALORANT][Valorant Champions 2026] Te
+ am Liquid vs Paper Rex
 TRIGGER:-PT1H
 END:VALARM
 END:VEVENT
