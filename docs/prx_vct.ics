@@ -3,16 +3,15 @@ VERSION:2.0
 PRODID:-//esports-scraper//EN
 X-WR-CALNAME:PRX Games
 BEGIN:VEVENT
-SUMMARY:PRX Game Day: [VALORANT][Valorant Champions 2026] Paper Rex vs LOU
- D
-DTSTART:20261007T133000Z
-DTEND:20261007T153000Z
-UID:754733@valorant-scraper
-DESCRIPTION:Format: Upper Quarterfinals\nState: unstarted\nRegion: cn
+SUMMARY:PRX Game Day: [VALORANT][Valorant Champions 2026] T1 vs Paper Rex
+DTSTART:20261009T140000Z
+DTEND:20261009T150000Z
+UID:754739@valorant-scraper
+DESCRIPTION:Format: Lower Round 1\nState: unstarted\nRegion: cn
 BEGIN:VALARM
 ACTION:DISPLAY
-DESCRIPTION:Reminder: PRX Game Day: [VALORANT][Valorant Champions 2026] Pa
- per Rex vs LOUD
+DESCRIPTION:Reminder: PRX Game Day: [VALORANT][Valorant Champions 2026] T1
+  vs Paper Rex
 TRIGGER:-PT1H
 END:VALARM
 END:VEVENT
