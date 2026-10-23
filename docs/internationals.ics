@@ -3,50 +3,14 @@ VERSION:2.0
 PRODID:-//esports-scraper//EN
 X-WR-CALNAME:Internationals Schedule
 BEGIN:VEVENT
-SUMMARY:[LOL][Worlds] Gen.G Esports vs Invictus Gaming
-DTSTART:20261023T170000Z
-DTEND:20261023T190000Z
-UID:115660540726095005@lol-scraper
-DESCRIPTION:Format: bestOf\nState: unstarted\nRegion: Worlds
-BEGIN:VALARM
-ACTION:DISPLAY
-DESCRIPTION:Reminder: [LOL][Worlds] Gen.G Esports vs Invictus Gaming
-TRIGGER:-PT1H
-END:VALARM
-END:VEVENT
-BEGIN:VEVENT
-SUMMARY:[LOL][Worlds] Hanwha Life Esports vs TOP ESPORTS
-DTSTART:20261023T180000Z
-DTEND:20261023T200000Z
-UID:115660540726095013@lol-scraper
-DESCRIPTION:Format: bestOf\nState: unstarted\nRegion: Worlds
-BEGIN:VALARM
-ACTION:DISPLAY
-DESCRIPTION:Reminder: [LOL][Worlds] Hanwha Life Esports vs TOP ESPORTS
-TRIGGER:-PT1H
-END:VALARM
-END:VEVENT
-BEGIN:VEVENT
-SUMMARY:[LOL][Worlds] BILIBILI GAMING vs Movistar KOI
-DTSTART:20261023T190000Z
-DTEND:20261023T210000Z
-UID:115660540726095019@lol-scraper
-DESCRIPTION:Format: bestOf\nState: unstarted\nRegion: Worlds
-BEGIN:VALARM
-ACTION:DISPLAY
-DESCRIPTION:Reminder: [LOL][Worlds] BILIBILI GAMING vs Movistar KOI
-TRIGGER:-PT1H
-END:VALARM
-END:VEVENT
-BEGIN:VEVENT
-SUMMARY:[LOL][Worlds] Anyone's Legend vs Karmine Corp
+SUMMARY:[LOL][Worlds] Karmine Corp vs Anyone's Legend
 DTSTART:20261023T200000Z
 DTEND:20261023T220000Z
 UID:115660540726095009@lol-scraper
-DESCRIPTION:Format: bestOf\nState: unstarted\nRegion: Worlds
+DESCRIPTION:Format: bestOf\nState: inProgress\nRegion: Worlds
 BEGIN:VALARM
 ACTION:DISPLAY
-DESCRIPTION:Reminder: [LOL][Worlds] Anyone's Legend vs Karmine Corp
+DESCRIPTION:Reminder: [LOL][Worlds] Karmine Corp vs Anyone's Legend
 TRIGGER:-PT1H
 END:VALARM
 END:VEVENT
