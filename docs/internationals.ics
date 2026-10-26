@@ -3,39 +3,15 @@ VERSION:2.0
 PRODID:-//esports-scraper//EN
 X-WR-CALNAME:Internationals Schedule
 BEGIN:VEVENT
-SUMMARY:[LOL][Worlds] BILIBILI GAMING vs Karmine Corp
-DTSTART:20261026T180000Z
-DTEND:20261026T200000Z
-UID:115660540726095051@lol-scraper
-DESCRIPTION:Format: bestOf\nState: inProgress\nRegion: Worlds
-BEGIN:VALARM
-ACTION:DISPLAY
-DESCRIPTION:Reminder: [LOL][Worlds] BILIBILI GAMING vs Karmine Corp
-TRIGGER:-PT1H
-END:VALARM
-END:VEVENT
-BEGIN:VEVENT
-SUMMARY:[LOL][Worlds] LOS vs Team Secret Whales
-DTSTART:20261026T190000Z
-DTEND:20261026T210000Z
-UID:115660540726095053@lol-scraper
-DESCRIPTION:Format: bestOf\nState: unstarted\nRegion: Worlds
-BEGIN:VALARM
-ACTION:DISPLAY
-DESCRIPTION:Reminder: [LOL][Worlds] LOS vs Team Secret Whales
-TRIGGER:-PT1H
-END:VALARM
-END:VEVENT
-BEGIN:VEVENT
-SUMMARY:[LOL][Worlds] Team Liquid Alienware vs Anyone's Legend
+SUMMARY:[LOL][Worlds] Anyone's Legend vs Team Liquid Alienware
 DTSTART:20261026T220000Z
 DTEND:20261027T000000Z
 UID:115660540726095057@lol-scraper
-DESCRIPTION:Format: bestOf\nState: unstarted\nRegion: Worlds
+DESCRIPTION:Format: bestOf\nState: inProgress\nRegion: Worlds
 BEGIN:VALARM
 ACTION:DISPLAY
-DESCRIPTION:Reminder: [LOL][Worlds] Team Liquid Alienware vs Anyone's Lege
- nd
+DESCRIPTION:Reminder: [LOL][Worlds] Anyone's Legend vs Team Liquid Alienwa
+ re
 TRIGGER:-PT1H
 END:VALARM
 END:VEVENT
