@@ -3,23 +3,11 @@ VERSION:2.0
 PRODID:-//esports-scraper//EN
 X-WR-CALNAME:Internationals Schedule
 BEGIN:VEVENT
-SUMMARY:[LOL][Worlds] Movistar KOI vs T1
-DTSTART:20261028T200000Z
-DTEND:20261028T220000Z
-UID:115660540726095061@lol-scraper
-DESCRIPTION:Format: bestOf\nState: unstarted\nRegion: Worlds
-BEGIN:VALARM
-ACTION:DISPLAY
-DESCRIPTION:Reminder: [LOL][Worlds] Movistar KOI vs T1
-TRIGGER:-PT1H
-END:VALARM
-END:VEVENT
-BEGIN:VEVENT
 SUMMARY:[LOL][Worlds] LYON vs Invictus Gaming
 DTSTART:20261028T230000Z
 DTEND:20261029T010000Z
 UID:115660540726095065@lol-scraper
-DESCRIPTION:Format: bestOf\nState: unstarted\nRegion: Worlds
+DESCRIPTION:Format: bestOf\nState: inProgress\nRegion: Worlds
 BEGIN:VALARM
 ACTION:DISPLAY
 DESCRIPTION:Reminder: [LOL][Worlds] LYON vs Invictus Gaming
