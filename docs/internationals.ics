@@ -3,14 +3,14 @@ VERSION:2.0
 PRODID:-//esports-scraper//EN
 X-WR-CALNAME:Internationals Schedule
 BEGIN:VEVENT
-SUMMARY:[LOL][Worlds] Team Liquid Alienware vs LOS
+SUMMARY:[LOL][Worlds] LOS vs Team Liquid Alienware
 DTSTART:20261030T200000Z
 DTEND:20261030T220000Z
 UID:115660540726095077@lol-scraper
-DESCRIPTION:Format: bestOf\nState: unstarted\nRegion: Worlds
+DESCRIPTION:Format: bestOf\nState: inProgress\nRegion: Worlds
 BEGIN:VALARM
 ACTION:DISPLAY
-DESCRIPTION:Reminder: [LOL][Worlds] Team Liquid Alienware vs LOS
+DESCRIPTION:Reminder: [LOL][Worlds] LOS vs Team Liquid Alienware
 TRIGGER:-PT1H
 END:VALARM
 END:VEVENT
